@@ -1,0 +1,57 @@
+{
+  "base_model": "saidutta69/Qwen3-1.7B-heretic",
+  "checkpoint": "RY3 v02",
+  "datasets": {
+    "cumulative_v02_train_examples": 2720,
+    "locked_eval_examples": 240,
+    "v01_train_examples": 1920,
+    "v02_new_examples": 800
+  },
+  "evaluation": {
+    "judge_scores_are_not_valid": true,
+    "judge_status": "invalid: evaluator failed to emit parseable scores",
+    "v02_response_file": "ry3_v02_results.jsonl",
+    "v02_responses": 240
+  },
+  "lora": {
+    "alpha": 32,
+    "bias": "none",
+    "dropout": 0.05,
+    "r": 16,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "retrieved_at": {
+    "user_local": "2026-10-11T12:14:18.308-05:00",
+    "user_timezone": "America/Chicago",
+    "utc": "2026-10-11T17:14:18.308Z"
+  },
+  "status": "TRAINED_CHECKPOINT",
+  "training": {
+    "effective_batch_size": 16,
+    "epochs": 2,
+    "gradient_accumulation_steps": 8,
+    "gradient_checkpointing": true,
+    "learning_rate": 0.00005,
+    "max_length": 128,
+    "optimizer": "paged_adamw_8bit",
+    "per_device_train_batch_size": 2,
+    "stage": "v02 continuation from RY3 v01",
+    "warmup_steps": 100
+  },
+  "training_result": {
+    "epochs_completed": 2,
+    "global_step": 340,
+    "runtime_seconds": 1353.6136,
+    "train_samples_per_second": 4.019,
+    "train_steps_per_second": 0.251,
+    "training_loss": 0.4264868536416222
+  }
+}
