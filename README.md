@@ -19,25 +19,53 @@ A parser failure is an evaluation failure, not a model score.
 
 ## Scoreboard (verified)
 
-| Model | Mean /20 | Parse rate | Regressions vs base | Verdict |
-|---|---|---|---|---|
-| base | **18.03** | 240/240 | — | baseline |
-| v01 | **18.00** | 237/240 | — | — |
-| **v02** | **19.57** | 240/240 | — | **champion** (+8.5% vs base) |
-| v03 (22-step) | 18.29 | 240/240 | 75 | **NO-GO** |
-| v03 (44-step) | 17.18 | 240/240 | 110 | **NO-GO** |
+| Model | Mean /20 | Eval | Parse rate | Regressions vs base | Verdict |
+|---|---|---|---|---|---|
+| base | **18.03** | full 240 | 240/240 | — | baseline |
+| v01 (historical) | **18.00** | full 240 | 237/240 | — | superseded — see faithful v01 |
+| **v02** | **19.57** | full 240 | 240/240 | — | **champion** (+8.5% vs base) |
+| **faithful v01** | **19.71** | 48 screen | 48/48 | 2/48 | **diagnostic** — frozen as control |
+| v03 (22-step) | 18.29 | full 240 | 240/240 | 75 | **NO-GO** |
+| v03 (44-step) | 17.18 | full 240 | 240/240 | 110 | **NO-GO** |
+| D4 Shot 1 | 16.40 | 180 subset | — | 138/180 | **NO-GO** |
 
 Promotion gates: mean **≥ 19.4/20** AND **≤ 5 regressions** vs base.
-v02 remains champion until beaten.
+v02 remains champion until beaten on the full eval.
 
-## Key scientific finding
+**Note on faithful v01:** scored 19.71 on the 48-example locked screen
+(every 5th of the 240). Screening means are not directly comparable to
+full-eval means. The adapter is frozen as an experimental control —
+see `docs/V01FAITHFUL_FREEZE_DIRECTIVE_2026-10-16.md`.
 
+## Key scientific findings
+
+### Dataset 3's format drilling degraded quality (2026-10-12/13)
 The true 44-step v03 run scored **lower** than the broken 22-step run
 (17.18 vs 18.29). More training on Dataset 3 = more degradation —
 completeness fell 3.879 → 3.117 across the runs. This dose-response
 **proves Dataset 3's format drilling degraded content quality**; the
 step count was never the cause. Training loss looked healthy (3.789);
 the locked eval exposed the truth. Loss is not the metric.
+
+### The v01 data was excellent all along (2026-10-16)
+The faithful v01 reproduction — trained with the **exact historical
+config** (fp16, no sequence-length cap) — scored **19.71/20** on the
+locked 48-example screen. This **refutes** the hypothesis that v01's
+historical 18.00 was caused by fp16 instability or long context.
+The v01 dataset (1,920 examples, 100% Ryan's own curation) genuinely
+produces ~19.5–19.7 quality. The historical 18.00 came from an
+unreconstructed factor, not the data. The primer experiment's "zero
+standalone gain" premise is dissolved. See
+`docs/V01FAITHFUL_DIAGNOSTIC_REPORT_2026-10-16.md`.
+
+### Shared blind spot: response completeness (2026-10-16)
+Detailed analysis of the 48-example screen reveals faithful-v01 and
+v02 share the **same weakness pattern**: the models give correct
+answers but don't go far enough — missing tradeoff comparisons,
+concrete examples, and structured steps when instructions request
+them. The model was never factually wrong on any of the 48 examples.
+This is a **delivery** problem, not a knowledge problem. See
+`docs/V01FAITHFUL_SCREEN_ANALYSIS_2026-10-16.md`.
 
 ## v02 weakness map → D4
 
@@ -47,11 +75,13 @@ and **completeness 3.879/4** (24 sub-4) — with a clear pattern: shallow
 reasoning, missing tradeoffs, no comparison of alternatives. Correctness
 (3.979) is nearly maxed.
 
-**D4 Shot 1** (in progress, 2026-10-13): a 160-example curated dataset
-targeting exactly those measured weaknesses — ordered troubleshooting
-steps, key checks, tradeoff analysis, concrete examples, fresh generation —
-demonstrated inside high-quality answers, never drilled as isolated
-templates. See `docs/D4_SHOT1_EXPERIMENT.md`.
+**D4 Shot 1** (2026-10-13): **NO-GO.** A 160-example curated dataset
+targeting those measured weaknesses scored 16.40/20 with 138/180
+regressions (template collapse — completeness 3.88→2.92). The approach
+(demonstrating troubleshooting steps, tradeoff analysis, concrete
+examples inside high-quality answers) was the right idea; the execution
+fell into format drilling. No Shot 2 authorized. See
+`docs/D4_SHOT1_EXPERIMENT.md`.
 
 ## Repo layout
 
@@ -72,3 +102,5 @@ training/   Training + evaluation scripts (Kaggle & Colab)
   records). It was caught in validation, quarantined, and never trained
   on. The validated replacement is `data/RY3_Dataset4_FIXED.jsonl`.
 - Rule: never continue training from a failed adapter.
+- Rule: the faithful-v01 adapter is frozen as an experimental control.
+  Do not train, merge, or modify it until the next hypothesis is defined.
