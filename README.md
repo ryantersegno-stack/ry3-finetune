@@ -23,19 +23,22 @@ A parser failure is an evaluation failure, not a model score.
 |---|---|---|---|---|---|
 | base | **18.03** | full 240 | 240/240 | — | baseline |
 | v01 (historical) | **18.00** | full 240 | 237/240 | — | superseded — see faithful v01 |
-| **v02** | **19.57** | full 240 | 240/240 | — | **champion** (+8.5% vs base) |
-| **faithful v01** | **19.71** | 48 screen | 48/48 | 2/48 | **diagnostic** — frozen as control |
+| **v02** | **19.57** | full 240 | 240/240 | 19 | former champion (+8.5% vs base) — dethroned 2026-10-16 |
+| **faithful v01** | **19.59** | full 240 | 240/240 | 15 | **CHAMPION** — beat v02 head-to-head (27 W / 20 L / 193 T) |
 | v03 (22-step) | 18.29 | full 240 | 240/240 | 75 | **NO-GO** |
 | v03 (44-step) | 17.18 | full 240 | 240/240 | 110 | **NO-GO** |
 | D4 Shot 1 | 16.40 | 180 subset | — | 138/180 | **NO-GO** |
 
 Promotion gates: mean **≥ 19.4/20** AND **≤ 5 regressions** vs base.
-v02 remains champion until beaten on the full eval.
+faithful v01 took the crown on the full locked 240 (19.59/20, 15 regressions vs base — fewer than v02's 19). The champion changed because the evidence changed, not because the bar moved.
 
-**Note on faithful v01:** scored 19.71 on the 48-example locked screen
-(every 5th of the 240). Screening means are not directly comparable to
-full-eval means. The adapter is frozen as an experimental control —
-see `docs/V01FAITHFUL_FREEZE_DIRECTIVE_2026-10-16.md`.
+**Note on faithful v01:** first scored 19.71 on the 48-example locked
+screen (every 5th of the 240), then went to the full locked 240 and
+scored **19.59/20** — correctness 3.971 (above the 3.95 gate) — taking
+the crown from v02. The adapter is protected as the incumbent: no
+continuation, merge, or overwrite until a hypothesis defines the
+intervention, success criterion, and regression gate. See
+`docs/V01FAITHFUL_FREEZE_DIRECTIVE_2026-10-16.md`.
 
 ## Key scientific findings
 
@@ -102,5 +105,5 @@ training/   Training + evaluation scripts (Kaggle & Colab)
   records). It was caught in validation, quarantined, and never trained
   on. The validated replacement is `data/RY3_Dataset4_FIXED.jsonl`.
 - Rule: never continue training from a failed adapter.
-- Rule: the faithful-v01 adapter is frozen as an experimental control.
-  Do not train, merge, or modify it until the next hypothesis is defined.
+- Rule: the faithful-v01 adapter is the protected champion. Do not
+  train, merge, or modify it until the next hypothesis is defined.
